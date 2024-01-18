@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Countries Details</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="style.css">
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6" id="appendData"></div>
+        <div class="col-md-6" id="countryDetails">
+          <!-- Details will be displayed here -->
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let currentCountry = null;
+
+      const getData = () => {
+        fetch("https://restcountries.com/v2/all")
+          .then((res) => res.json())
+          .then((data) => {
+            data.forEach((value) => {
+              let wrapper = document.createElement("div");
+              wrapper.className = "card col-md-3 m-3";
+              wrapper.style.width = "25rem";
+
+              let cardContainer = document.createElement("div");
+              cardContainer.className = "card-container";
+
+              let cardFlag = document.createElement("img");
+              cardFlag.className = "card-img-top col-4 pt-5";
+              cardFlag.src = value.flag;
+
+              let cardBody = document.createElement("div");
+              cardBody.className = "card-body d-flex flex-column align-items-start";
+
+              let text = document.createElement("p");
+              text.className = "card-text";
+              text.textContent = value.name;
+
+              cardBody.appendChild(text);
+              cardContainer.appendChild(cardFlag);
+              cardContainer.appendChild(cardBody);
+              wrapper.appendChild(cardContainer);
+
+              wrapper.addEventListener("click", function () {
+                displayCountryDetails(value, cardBody, text);
+              });
+
+              document.getElementById("appendData").appendChild(wrapper);
+            });
+          });
+      };
+
+      const displayCountryDetails = (country, cardBody, text) => {
+        if (currentCountry === country) {
+          cardBody.innerHTML = "";
+          currentCountry = null;
+        } else {
+          cardBody.innerHTML = "";
+
+          let detailsList = document.createElement("ul");
+          detailsList.className = "list-group";
+
+          let countryNameItem = document.createElement("li");
+          countryNameItem.className = "list-group-item";
+          countryNameItem.textContent = `Country: ${country.name}`;
+
+          let callingCodesItem = document.createElement("li");
+          callingCodesItem.className = "list-group-item";
+          callingCodesItem.textContent = `Calling Codes: ${country.callingCodes.join(", ")}`;
+
+          let capitalCityItem = document.createElement("li");
+          capitalCityItem.className = "list-group-item";
+          capitalCityItem.textContent = `Capital City: ${country.capital}`;
+
+          let regionItem = document.createElement("li");
+          regionItem.className = "list-group-item";
+          regionItem.textContent = `Region: ${country.region}`;
+
+          let subregionItem = document.createElement("li");
+          subregionItem.className = "list-group-item";
+          subregionItem.textContent = `Subregion: ${country.subregion}`;
+
+          let populationItem = document.createElement("li");
+          populationItem.className = "list-group-item";
+          populationItem.textContent = `Population: ${country.population.toLocaleString()}`;
+
+          detailsList.appendChild(countryNameItem);
+          detailsList.appendChild(callingCodesItem);
+          detailsList.appendChild(capitalCityItem);
+          detailsList.appendChild(regionItem);
+          detailsList.appendChild(subregionItem);
+          detailsList.appendChild(populationItem);
+
+          cardBody.appendChild(detailsList);
+          currentCountry = country;
+
+          // Update the displayed country name in the text element
+          text.textContent = country.name;
+        }
+      };
+
+      getData();
+    </script>
+  </body>
+</html>
